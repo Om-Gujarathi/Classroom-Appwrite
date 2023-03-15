@@ -14,13 +14,14 @@ class Attendance extends StatefulWidget {
 }
 
 class _AttendanceState extends State<Attendance> {
+  bool isOwner = false;
   String? docId;
   bool currStatus = true;
   RealtimeSubscription? subscription;
 
   @override
   void initState() {
-    // onTeamFormed();
+    onTeamFormed();
     super.initState();
   }
 
@@ -28,6 +29,8 @@ class _AttendanceState extends State<Attendance> {
     AuthState state = Provider.of<AuthState>(context, listen: false);
     docId = await state.createAttendance(teamId: widget.team.$id);
     subscription = state.getLatestPresenty(docId: docId!);
+    isOwner = await state.getTeamOwner(docId: docId!);
+    print(isOwner);
     setState(() {});
     print(docId);
   }
@@ -38,32 +41,43 @@ class _AttendanceState extends State<Attendance> {
     AuthState state = Provider.of<AuthState>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.deepPurpleAccent,
+        title: Text('A T T E N D A N C E'),
+        centerTitle: true,
         leading: IconButton(
             onPressed: () {
               Navigator.pop(context);
-              // state.whenPresentyStopped(subscription: subscription!);
+              state.whenPresentyStopped(subscription: subscription!);
+              if (currStatus) {
+                state.stopOrStartAttendance(
+                    docId: docId!, currStatus: currStatus);
+                currStatus = !currStatus;
+              }
             },
             icon: Icon(Icons.arrow_back)),
       ),
       body: SafeArea(
           child: SingleChildScrollView(
+        padding: EdgeInsets.all(16.0),
         child: Column(
           children: [
-            ElevatedButton(
-              onPressed: () {
-                state.markPresenty(
-                    context: context, docId: docId!, teamId: widget.team.$id);
-              },
-              child: const Text('MARK'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                state.stopOrStartAttendance(
-                    docId: docId!, currStatus: currStatus);
-                currStatus = !currStatus;
-              },
-              child: const Text('STOP/START'),
-            ),
+            if (isOwner)
+              ElevatedButton(
+                onPressed: () {
+                  state.stopOrStartAttendance(
+                      docId: docId!, currStatus: currStatus);
+                  currStatus = !currStatus;
+                },
+                child: const Text('STOP/START'),
+              ),
+            if (!isOwner)
+              ElevatedButton(
+                onPressed: () {
+                  state.markPresenty(
+                      context: context, docId: docId!, teamId: widget.team.$id);
+                },
+                child: const Text('MARK'),
+              ),
             if (docId != null && subscription != null)
               StreamBuilder(
                   stream: subscription!.stream,
@@ -100,20 +114,43 @@ class _AttendanceState extends State<Attendance> {
                             ],
                           ),
                           ListView.builder(
-                              primary: false,
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemCount: students.length,
-                              itemBuilder: (context, index) {
-                                print(students[index]);
-                                return Column(
-                                  children: [
-                                    ListTile(
-                                      title: Text(students[index]),
-                                    ),
-                                  ],
-                                );
-                              }),
+                            primary: false,
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: students.length,
+                            itemBuilder: (context, index) {
+                              print(students[index]);
+                              return FutureBuilder(
+                                future: state.getUserFromId(
+                                    userId: students[index]),
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData) {
+                                    return Card(
+                                      child: ListTile(
+                                        title: Text(
+                                          snapshot.data!.name,
+                                          style: TextStyle(
+                                            fontSize: 18.0,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        trailing: Icon(Icons.check_circle,
+                                            color: Colors.green),
+                                      ),
+                                      margin:
+                                          EdgeInsets.symmetric(vertical: 5.0),
+                                      color: Colors.grey[200],
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                      ),
+                                    );
+                                  }
+                                  return Container();
+                                },
+                              );
+                            },
+                          ),
                         ],
                       );
                     } else {

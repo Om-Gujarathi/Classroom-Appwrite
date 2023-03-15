@@ -19,13 +19,15 @@ class Previous extends StatelessWidget {
           builder: (context, AsyncSnapshot snapshot) {
             if (snapshot.hasData) {
               final data = snapshot.data.toMap();
+              print("LATEST");
               print(data.toString());
               int lectures = data["total"];
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  SizedBox(height: 8.0),
                   Text(
-                    'RECENT CLASSES : $lectures',
+                    'RECENT LECTURES - $lectures',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   ...data["documents"].map(
@@ -33,12 +35,15 @@ class Previous extends StatelessWidget {
                       title: Text(DateFormat('MMMM d, h:mm a')
                           .format(DateTime.parse(doc["data"]["date"]))
                           .toString()),
-                      onTap: () {
+                      onTap: () async {
+                        bool isOwner =
+                            await state.getTeamOwner(docId: doc["\$id"]);
                         Attend attend = Attend(
                             docId: doc["\$id"],
                             teamId: doc["data"]["teamId"],
                             status: doc["data"]["status"],
-                            presentId: doc["data"]["presentId"]);
+                            presentId: doc["data"]["presentId"],
+                            isOwner: isOwner);
 
                         Navigator.push(
                             context,

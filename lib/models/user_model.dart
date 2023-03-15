@@ -4,6 +4,7 @@ class UserFields {
   static const String email = "email";
   static const String registrationDate = "registration";
   static const String roles = "roles";
+  static const String prn = "prn";
 }
 
 class User {
@@ -11,19 +12,21 @@ class User {
   late String email;
   late String? registration;
   late String name;
+  late String? prn;
 
-  User({
-    required this.id,
-    required this.email,
-    required this.registration,
-    required this.name,
-  });
+  User(
+      {required this.id,
+      required this.email,
+      required this.registration,
+      required this.name,
+      required this.prn});
 
   User.fromJson(Map<String, dynamic> json) {
     id = json[UserFields.id];
     email = json[UserFields.email];
     registration = json[UserFields.registrationDate];
     name = json[UserFields.name];
+    prn = json[UserFields.prn];
   }
 
   Map<String, dynamic> toJson() {
@@ -32,6 +35,7 @@ class User {
     data[UserFields.email] = this.email;
     data[UserFields.registrationDate] = this.registration;
     data[UserFields.name] = this.name;
+    data[UserFields.prn] = this.prn;
     return data;
   }
 }

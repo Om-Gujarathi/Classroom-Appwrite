@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:appwrite/appwrite.dart';
 import 'package:attendance/constants/appwrite_constants.dart';
 import 'package:attendance/models/user_model.dart';
@@ -108,7 +110,7 @@ class AuthState extends ChangeNotifier {
     notifyListeners();
   }
 
-  inviteToTeam({required String teamId,required String emailId}) async {
+  inviteToTeam({required String teamId, required String emailId}) async {
     final result = await teams.createMembership(
       teamId: teamId,
       email: emailId,
@@ -140,10 +142,23 @@ class AuthState extends ChangeNotifier {
           "teamId": teamId,
           "date": DateFormat('yyyy-MM-dd').format(DateTime.now()),
           "status": true,
-          "presentId": []
+          "presentId": [],
+          "owner": _user!.id
         });
 
     return doc.$id;
+  }
+
+  Future<User> getUserFromId({required String userId}) async {
+    final doc = await databases.getDocument(
+      databaseId: AppwriteConstants.databaseId,
+      collectionId: AppwriteConstants.usersCollectionId,
+      documentId: userId,
+    );
+    // print("USER RETUNED");
+    // print(doc.toMap());
+
+    return User.fromJson(doc.toMap()["data"]);
   }
 
   markPresenty(
@@ -160,7 +175,7 @@ class AuthState extends ChangeNotifier {
       return;
     }
     List temp = result.data['presentId'];
-    temp.add("ME PAN PRESENT");
+    temp.add(user?.id);
 
     databases.updateDocument(
         databaseId: AppwriteConstants.databaseId,
@@ -190,6 +205,19 @@ class AuthState extends ChangeNotifier {
 
   Future listTeamMemberships({required String teamId}) {
     return teams.listMemberships(teamId: teamId);
+  }
+
+  Future getTeamOwner({required String docId}) async {
+    print("GETTING TEAM OWNER : ${docId}");
+    final res = await databases.getDocument(
+        collectionId: AppwriteConstants.attendanceCollectionId,
+        databaseId: AppwriteConstants.databaseId,
+        documentId: docId);
+    if (_user!.id == res.toMap()["data"]["owner"]) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   stopOrStartAttendance({required String docId, required bool currStatus}) {

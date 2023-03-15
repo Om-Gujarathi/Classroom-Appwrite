@@ -18,6 +18,7 @@ class FirstPage extends StatelessWidget {
             builder: (context, AsyncSnapshot snapshot) {
               if (snapshot.hasData) {
                 final data = snapshot.data.toMap();
+                print(data);
                 return Column(
                   children: [
                     ...data["teams"].map(

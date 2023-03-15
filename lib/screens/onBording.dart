@@ -36,6 +36,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
     AuthState state = Provider.of<AuthState>(context, listen: false);
     return Scaffold(
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.pink,
         onPressed: () {
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => CreateClass()));
@@ -49,7 +50,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
             style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
           ),
           centerTitle: true,
-          backgroundColor: Colors.greenAccent),
+          backgroundColor: Colors.deepPurpleAccent),
       drawer: Drawer(
           child: Container(
         color: Colors.white,

@@ -8,12 +8,14 @@ class Attend {
   String teamId;
   bool status;
   List<dynamic> presentId;
+  bool isOwner;
 
   Attend({
     required this.docId,
     required this.teamId,
     required this.status,
     required this.presentId,
+    required this.isOwner
   });
 
   Attend copyWith({
@@ -26,7 +28,7 @@ class Attend {
       docId: docId ?? this.docId,
       teamId: teamId ?? this.teamId,
       status: status ?? this.status,
-      presentId: presentId ?? this.presentId,
+      presentId: presentId ?? this.presentId, isOwner: false,
     );
   }
 
@@ -44,6 +46,7 @@ class Attend {
         docId: map['docId'] as String,
         teamId: map['teamId'] as String,
         status: map['status'] as bool,
+        isOwner: map['isOwner'] as bool,
         presentId: List<String>.from((map['presentId'] as List<String>)));
   }
 

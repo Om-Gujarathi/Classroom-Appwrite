@@ -32,7 +32,7 @@ class _NewPageState extends State<NewPage> {
                   state.inviteToTeam(
                       teamId: widget.team.$id, emailId: _addEmail.text);
                 },
-                color: Colors.greenAccent,
+                color: Colors.deepPurpleAccent,
                 elevation: 0,
                 child: const Text('Add'),
               )
@@ -47,39 +47,71 @@ class _NewPageState extends State<NewPage> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => Attendance(team: widget.team)));
-            },
-            child: Icon(Icons.add)),
+        // floatingActionButton: FloatingActionButton(
+        //     backgroundColor: Colors.pink,
+        //     onPressed: () {
+        //       Navigator.push(
+        //           context,
+        //           MaterialPageRoute(
+        //               builder: (context) => Attendance(team: widget.team)));
+        //     },
+        //     child: Icon(Icons.add)),
         appBar: AppBar(
+          title: Text('A T T E N D A N C E'),
+          centerTitle: true,
           actions: [
             IconButton(
                 onPressed: _showDialog,
                 icon: const Icon(
                   Icons.new_label,
-                  color: Colors.black,
+                  color: Colors.white,
                 ))
           ],
-          backgroundColor: Colors.white,
+          backgroundColor: Colors.deepPurpleAccent,
           elevation: 0,
         ),
         backgroundColor: Colors.white,
         body: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
+            SizedBox(height: 8.0),
             Container(
-              height: 275,
               width: double.infinity,
               padding: const EdgeInsets.all(16.0),
-              child: Container(
-                decoration:
-                    BoxDecoration(border: Border.all(), color: Colors.white),
+              child: Column(
+                children: [
+                  Center(
+                    child: Text(
+                      widget.team.name,
+                      style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Divider(
+                    thickness: 1,
+                    color: Colors.black,
+                  ),
+                  Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Students - ${widget.team.total}',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
-            const TabBar(tabs: [
+            SizedBox(height: 8.0),
+            const TabBar(dividerColor: Colors.deepPurpleAccent, tabs: [
               Tab(
                 icon: Icon(
                   Icons.history,
@@ -99,6 +131,20 @@ class _NewPageState extends State<NewPage> {
                 Just2(team: widget.team),
               ]),
             ),
+            if (state.user!.id != "6404718fbdb12b1e640f")
+              Container(
+                padding: EdgeInsets.all(16.0),
+                child: FloatingActionButton(
+                    backgroundColor: Colors.pink,
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  Attendance(team: widget.team)));
+                    },
+                    child: Icon(Icons.add)),
+              )
           ],
         ),
       ),

@@ -26,7 +26,9 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'Flutter Demo',
-          theme: ThemeData(primaryColor: Colors.greenAccent,),
+          theme: ThemeData(
+            primaryColor: Colors.deepPurpleAccent,
+          ),
           home: Consumer<AuthState>(
             builder: (context, state, child) {
               if (state.isLoading) {
